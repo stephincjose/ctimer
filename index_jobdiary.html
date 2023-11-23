@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #282c34;
+            color: #abb2bf;
+        }
+
+        h1 {
+            color: #61dafb;
+        }
+
+        #countdown {
+            font-size: 24px;
+            color: #61dafb;
+        }
+
+        label {
+            color: #61dafb;
+        }
+
+        input {
+            background-color: #3e4451;
+            color: #abb2bf;
+            border: none;
+            padding: 8px;
+            margin: 8px;
+            border-radius: 5px;
+        }
+
+        input:hover, input:focus {
+            background-color: #4e5562;
+        }
+
+        button {
+            background-color: #61dafb;
+            color: #282c34;
+            border: none;
+            padding: 10px;
+            margin: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #4fa3d1;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Countdown Timer</h1>
+
+<label for="countdownTime">Set Time:</label>
+<input type="text" id="countdownTime" placeholder="Select time" class="flatpickr">
+<button onclick="startTimer()">Start</button>
+<button onclick="stopTimer()">Stop</button>
+<button onclick="pauseTimer()">Pause</button>
+
+<p id="countdown"></p>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        flatpickr("#countdownTime", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+            theme: "dark"
+        });
+    });
+
+    var countdownTimeInput = document.getElementById("countdownTime");
+    var startButton = document.querySelector("button:nth-of-type(1)");
+    var stopButton = document.querySelector("button:nth-of-type(2)");
+    var pauseButton = document.querySelector("button:nth-of-type(3)");
+
+    var countdownHours;
+    var countdownMinutes;
+    var countdownEndTime;
+    var countdownInterval;
+
+    function startTimer() {
+        var selectedTime = countdownTimeInput.value.split(":");
+        countdownHours = parseInt(selectedTime[0]) || 0;
+        countdownMinutes = parseInt(selectedTime[1]) || 0;
+
+        var currentTime = new Date();
+        countdownEndTime = currentTime.getTime() + countdownHours * 60 * 60 * 1000 + countdownMinutes * 60 * 1000;
+
+        // Update the countdown every 1 second
+        countdownInterval = setInterval(updateCountdown, 1000);
+
+        // Disable the input and start button once the timer starts
+        countdownTimeInput.disabled = true;
+        startButton.disabled = true;
+    }
+
+    function stopTimer() {
+        clearInterval(countdownInterval);
+
+        // Enable the input and start button once the timer stops
+        countdownTimeInput.disabled = false;
+        startButton.disabled = false;
+
+        document.getElementById("countdown").innerHTML = "Timer Stopped";
+    }
+
+    function pauseTimer() {
+        clearInterval(countdownInterval);
+
+        // Enable the input and start button once the timer is paused
+        countdownTimeInput.disabled = false;
+        startButton.disabled = false;
+    }
+
+    function updateCountdown() {
+        var now = new Date().getTime();
+        var distance = countdownEndTime - now;
+
+        if (distance > 0) {
+            var hours = Math.floor(distance / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown").innerHTML = hours + "h " + minutes + "m " + seconds + "s ";
+        } else {
+            clearInterval(countdownInterval);
+            document.getElementById("countdown").innerHTML = "Countdown Expired";
+            // Enable the input and start button once the timer completes
+            countdownTimeInput.disabled = false;
+            startButton.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>
